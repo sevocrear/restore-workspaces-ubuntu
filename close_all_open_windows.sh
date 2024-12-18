@@ -1,0 +1,1 @@
+wmctrl -l | awk '{ print $1 }' | xargs -I{} wmctrl -ic {}
