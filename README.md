@@ -1,72 +1,60 @@
-# restore-workspaces-ubuntu
-Restore Your Ubuntu Workspace with ease
+# 🌟 Restore Workspaces Ubuntu
+Effortlessly Restore Your Ubuntu Workspace
 
-There was a problem for me that I have a bunch of workspaces I open every time I power on my PC to start working...
+🚀 Tired of manually setting up your workspaces each time you power on your PC? It used to take me up to 5 minutes every time I started working—what a routine! I searched for solutions, tried several tools, yet none fit my needs.
 
-And everytime it's quite time consuming. Like, It took up to 5 minutes. It became a routine for me
+🤖 We've created a tool that makes recreating your workspaces a breeze!
 
-So I started looking for a solution...
+🎯 With this tool, you can set up scripts for any workspace configuration you desire—let's get started!
 
-I've tried several tools but none of them did what I wanted.
+# 🛠️ First Step: Set Up Your Workspaces
+Initially, manually arrange your workspaces exactly how you want them.
 
-So, covered by LLM agent, we created a tool that helps to recreate the workspaces with EASE!
+![image](image-1.png)
 
-You can create several tool scripts for any workspaces set up you want!
+💡 Multiple displays? No problem!
 
-Let's start!
+Once you’ve set everything up the way you want...
 
-# First Step. Set Up Your Workspaces
-
-First time, you need to manually set up your workspaces the way you want to see it.
-
-![alt text](image-1.png)
-
-If you have several displays, it's not a problem at all.
-
-After all preparations and adjustings done
-
-# Second Step. Export your current workspaces setup in JSON
-
-## Requirements
+# 📝 Second Step: Export Your Current Workspace Setup in JSON
+## 📋 Requirements
 ```
 sudo apt install wmctrl jq -y
 ```
 
-## Run the script
+## Run the Script
 ```
 chmod a+x ./get_ws.sh
 ./get_ws.sh
 ```
-You should see `Workspace information saved to workspace_info.json`
 
-Now,
+🗄️ You should see: `Workspace information saved to workspace_info.json`
 
-# Third Step. Let's adjust the `restore_ws.sh` script to recreate your workspaces.
+Moving on...
 
-This bash script setups the workspaces as you need!
-It opens desired apps via CLI and moves them into the desired workspace
-The template command is:
+# 🔧 Third Step: Adjust the restore_ws.sh Script to Recreate Your Workspaces
+This bash script configures your workspaces just the way you need! It opens the desired apps via CLI and places them in the correct workspaces.
+
+The command template is:
 
 `open_and_move app_cmd expected_title workspace_num x_start y_start width height`
 
-It finds the certain app by looking for `expected_title`
+🔍 It identifies the application by `expected_title`.
 
-> NOTION: Workspaces number should go in the ascending mode (to be created one by one) starting from 0.
+> ⚠️ Note: Workspace numbers should ascend sequentially, starting with 0.
 
-## Option one. Adjust it manually
+## 🔨 Option One: Adjust Manually
+Personalize the script to your needs.
 
-
-
-## Option two. Go to LLM (Claude, Ollama, ChatGPT) and write next prompt:
+## 🧙‍♂️ Option Two: Use an AI Assistant
+Harness AI power for refining your scripts with the prompt:
 
 ```
 here is the contents of workspace_info.json:
- <your JSON contents>
+<your JSON contents>
 Adjust the next bash script 'open_and_move' commands accordingly to recreate my workspaces.
-<THIS BASH SCRIPT code >
+<THIS BASH SCRIPT code>
 ```
-Now, adjust them manually as LLM Agent could be wrong and be happy!
+✨ Adjust manually afterward, as AI may be imperfect—and enjoy your streamlined workspace setup!
 
-
-
-YOU ALL SET UP!
+🎉 YOU'RE ALL SET UP!
