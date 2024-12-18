@@ -58,3 +58,9 @@ Adjust the next bash script 'open_and_move' commands accordingly to recreate my 
 ✨ Adjust manually afterward, as AI may be imperfect—and enjoy your streamlined workspace setup!
 
 🎉 YOU'RE ALL SET UP!
+
+Just run:
+
+```
+./restore_ws.sh
+```
