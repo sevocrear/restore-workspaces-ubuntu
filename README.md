@@ -57,10 +57,29 @@ Adjust the next bash script 'open_and_move' commands accordingly to recreate my 
 ```
 ✨ Adjust manually afterward, as AI may be imperfect—and enjoy your streamlined workspace setup!
 
-🎉 YOU'RE ALL SET UP!
 
+# Final Step:
 Just run:
 
 ```
 ./restore_ws.sh
+```
+
+🎉 YOU'RE ALL SET UP!
+
+# Add it to /usr/bin
+
+```
+sudo cp restore_ws.sh /usr/bin/restore_ws
+sudo cp get_ws.sh /usr/bin/get_ws
+sudo cp close_all_open_windows.sh /usr/bin/close_ws
+```
+
+## Run
+```
+get_ws
+
+restore_ws
+
+close_ws
 ```
