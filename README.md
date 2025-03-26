@@ -19,7 +19,7 @@ Once you’ve set everything up the way you want...
 # 📝 Second Step: Export Your Current Workspace Setup in JSON
 ## 📋 Requirements
 ```
-sudo apt install wmctrl jq -y
+sudo apt install wmctrl jq gnome-tweaks  -y
 ```
 
 ## Run the Script
