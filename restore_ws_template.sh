@@ -27,6 +27,21 @@ YELLOW='\033[33m'
 BLUE='\033[34m'
 NC='\033[0m'  # No Color
 
+# Set default values if not provided via args
+IDL=${1:-"cursor"} # core or cursor
+MACHINE=${2:-"carbon-ad10"} # specify remote ego
+
+# Conditional assignment of IDL_TITLE based on the value of IDL
+if [ "$IDL" = "code" ]; then
+    IDL_TITLE="Visual Studio Code"
+elif [ "$IDL" = "cursor" ]; then
+    IDL_TITLE="Cursor"
+else
+    IDL_TITLE="Unknown IDE"
+fi
+# Output the result
+echo "IDL_TITLE is set to: $IDL_TITLE"
+
 # Ensure wmctrl is installed
 if ! command -v wmctrl &> /dev/null; then
     echo -e "${RED}wmctrl could not be found. Please install it using: sudo apt install wmctrl${NC}"
@@ -81,10 +96,12 @@ open_and_move() {
             command+=" | grep -e '$title'"
         done
 
+        # Execute the constructed command
         result=$(eval $command | awk '{print $1}')
+        # Ensure to consider the case where titles might not directly follow each other
         if win_id=$result; then
             if [ -n "$win_id" ]; then
-                break 2
+                    break 2
             fi
         fi
         echo -e "${BLUE}Waiting for window with titles (${titles[@]}) to appear...${NC}"
@@ -98,36 +115,24 @@ open_and_move() {
     echo -e "${YELLOW}Window $win_id moved to workspace $workspace${NC}"
 }
 
+X=132
+Y=64
+WIDTH=2494
+HEIGHT=1408
+W_H=2560
 
 # --------------------- (LOWER Display) -----------------------
-## Open Visual Studio Code windows
-open_and_move "code --new-window carla" "carla-test" "Visual Studio Code" 1 0 1180 2560 1440
-open_and_move "code --new-window dir2" "unified_pipeline" "Visual Studio Code" 2 0 1180 2560 1440
-open_and_move "code --new-window dir3" "fpga" "Visual Studio Code" 3 0 1180 2560 1440
-open_and_move "code --new-window any_dir_4" "ansible" "Visual Studio Code" 4 0 1180 2560 1440
-open_and_move 'code --new-window --folder-uri vscode-remote://ssh-remote+server-vpn/home/vpn/is_temp_dir_3' "is_temp_dir_3" "Visual Studio Code"  5 0 1180 2560 1440
-# # Open Obsidian
-open_and_move "true" "Obsidian" 0 0 1180 2560 1440
-open_and_move "echo telegram" "@sevoc123" 6 0 1180 2560 1440
-open_and_move "code --new-window ./restore-workspaces-ubuntu" "restore-workspaces-ubuntu" "Visual Studio Code" 7 0 1180 2560 1440
+open_and_move "true" "Saved Messages" 0 $X $Y $WIDTH $HEIGHT
+open_and_move "true" "Obsidian" 1 $X $Y $WIDTH $HEIGHT
 
+open_and_move "$IDL --new-window --folder-uri vscode-remote://ssh-remote+ws/data/dir" "dir" $IDL_TITLE "SSH" 7 $X $Y $WIDTH $HEIGHT
 
+open_and_move "$IDL --new-window /media/sevocrear/data/Crypto_Dir/ATOM/code/restore-workspaces-ubuntu" "restore-workspaces-ubuntu" $IDL_TITLE 8 $X $Y $WIDTH $HEIGHT
 
-# --------------------- (UPPER Display) -----------------------
-# # Open Yandex Browser windows
-open_and_move "yandex-browser --new-window url" "ADAS" "infra" "ansible" 4 0 0 1920 1080
-open_and_move "yandex-browser --new-window https://url" "dir4" 3 0 0 1920 1080
-open_and_move "yandex-browser --new-window https://url1" "youtube" 2 0 0 1920 1080
-open_and_move "yandex-browser --new-window http://url2" "g4f" 0 0 0 1920 1080
-open_and_move "yandex-browser --new-window https://url3" "fun" 5 0 0 1920 1080
-# Open CarlaUE4 (assuming it's a terminal app or game engine window)
-open_and_move "true" "CarlaUE4" 1 0 0 1920 1080
-# # Open Calendar in Microsoft Teams
-open_and_move "teams" "Microsoft Teams" 6 0 0 1920 1080
-open_and_move "yandex-browser --new-window https://github.com/sevocrear/restore-workspaces-ubuntu" "Restore Your Ubuntu Workspace with ease" 7 0 0 1920 1080
-
+open_and_move "yandex-browser" "" -1 $W_H 0 1920 1080
 
 # Add more as needed.
 
 
 echo -e "${GREEN}Workspaces have been restored. Check if all windows are correctly positioned.${NC}"
+
