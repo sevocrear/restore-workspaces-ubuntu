@@ -29,7 +29,7 @@ NC='\033[0m'  # No Color
 
 # Set default values if not provided via args
 IDL=${1:-"cursor"} # core or cursor
-MACHINE=${2:-"carbon-ad10"} # specify remote ego
+MACHINE=${2:-"remote"} # specify remote machine
 
 # Conditional assignment of IDL_TITLE based on the value of IDL
 if [ "$IDL" = "code" ]; then
@@ -63,12 +63,14 @@ open_and_move() {
 
     # Function to check if window exists for given titles
     window_exists() {
+        local win_id=""
         local command="wmctrl -l"
         for title in "${titles[@]}"; do
             command+=" | grep -e '$title'"
         done
 
         # Execute the constructed command
+        echo -e "${YELLOW}Executing command: $command${NC}"
         result=$(eval $command | awk '{print $1}')
         if win_id=$result; then
             if [ -n "$win_id" ]; then
@@ -80,7 +82,7 @@ open_and_move() {
 
     # Check if any window exists
     if window_exists; then
-        echo -e "${GREEN}A window $win_id with all titles (${titles[@]}) exists${NC}"
+        echo -e "${GREEN}The window $win_id with all titles (${titles[@]}) exists${NC}"
     else
         # Open application
         echo -e "${YELLOW}Launching command: $app_cmd${NC}"
@@ -89,8 +91,8 @@ open_and_move() {
     fi
 
     # Find window ID by its title
-    local win_id=""
     while true; do
+        local win_id=""
         local command="wmctrl -l"
         for title in "${titles[@]}"; do
             command+=" | grep -e '$title'"
@@ -108,31 +110,66 @@ open_and_move() {
         sleep 1
     done
 
-    # Move and resize the window
-    wmctrl -ir "$win_id" -t "$workspace"
-    wmctrl -ir "$win_id" -e 0,"$x","$y","$width","$height"
+    # Move and resize the window with retries
+    max_retries=10
+    retry=0
+    while [ $retry -lt $max_retries ]; do
+        echo -e "${YELLOW}Moving window $win_id to workspace $workspace${NC}"
+        wmctrl -ir "$win_id" -t "$workspace"
+        wmctrl -ir "$win_id" -e 0,"$x","$y","$width","$height"
+        sleep 0.7
 
-    echo -e "${YELLOW}Window $win_id moved to workspace $workspace${NC}"
+        # Check if window is on the correct workspace
+        current_ws=$(wmctrl -l | awk -v id="$win_id" '$1==id {print $2}')
+        if [ "$current_ws" = "$workspace" ]; then
+            # Optionally, check geometry (x, y, width, height)
+            geometry=$(xwininfo -id "$win_id" | grep -E 'Absolute upper-left X|Absolute upper-left Y|Width|Height')
+            x_ok=$(echo "$geometry" | grep "Absolute upper-left X" | awk '{print $NF}')
+            y_ok=$(echo "$geometry" | grep "Absolute upper-left Y" | awk '{print $NF}')
+            width_ok=$(echo "$geometry" | grep "Width" | awk '{print $2}')
+            height_ok=$(echo "$geometry" | grep "Height" | awk '{print $2}')
+            if [ "$x_ok" = "$x" ] && [ "$y_ok" = "$y" ] && [ "$width_ok" = "$width" ] && [ "$height_ok" = "$height" ]; then
+                echo -e "${GREEN}Window $win_id successfully moved and resized.${NC}"
+                break
+            fi
+        fi
+        retry=$((retry+1))
+        echo -e "${YELLOW}Retrying move/resize for window $win_id ($retry/$max_retries)...${NC}"
+    done
+
+    if [ $retry -eq $max_retries ]; then
+        echo -e "${RED}Failed to move/resize window $win_id after $max_retries attempts.${NC}"
+    fi
 }
 
-X=132
-Y=64
-WIDTH=2494
-HEIGHT=1408
+X=0
+Y=0
+WIDTH=2560
+HEIGHT=1440
 W_H=2560
 
 # --------------------- (LOWER Display) -----------------------
-open_and_move "true" "Saved Messages" 0 $X $Y $WIDTH $HEIGHT
-open_and_move "true" "Obsidian" 1 $X $Y $WIDTH $HEIGHT
+# Example workspace configurations - replace with your own
+open_and_move "true" "Messages" 0 $X $Y $WIDTH $HEIGHT
+open_and_move "true" "Notes" 1 $X $Y $WIDTH $HEIGHT
 
-open_and_move "$IDL --new-window --folder-uri vscode-remote://ssh-remote+ws/data/dir" "dir" $IDL_TITLE "SSH" 7 $X $Y $WIDTH $HEIGHT
+open_and_move "$IDL --new-window /path/to/project1" "project1" $IDL_TITLE 2 $X $Y $WIDTH $HEIGHT
 
-open_and_move "$IDL --new-window /media/sevocrear/data/Crypto_Dir/ATOM/code/restore-workspaces-ubuntu" "restore-workspaces-ubuntu" $IDL_TITLE 8 $X $Y $WIDTH $HEIGHT
+open_and_move "$IDL --new-window --folder-uri vscode-remote://ssh-remote+$MACHINE/home/user/project2" "project2" $IDL_TITLE "SSH" 3 $X $Y $WIDTH $HEIGHT
 
-open_and_move "yandex-browser" "" -1 $W_H 0 1920 1080
+open_and_move "$IDL --new-window /path/to/project3" "project3" $IDL_TITLE 4 $X $Y $WIDTH $HEIGHT
+
+open_and_move "$IDL --new-window --folder-uri vscode-remote://ssh-remote+$MACHINE/home/user/project4" "project4" $IDL_TITLE "SSH" 5 $X $Y $WIDTH $HEIGHT
+
+open_and_move "$IDL --new-window /path/to/project5" "project5" $IDL_TITLE 6 $X $Y $WIDTH $HEIGHT
+
+open_and_move "$IDL --new-window /path/to/project6" "project6" $IDL_TITLE 7 $X $Y $WIDTH $HEIGHT
+
+open_and_move "$IDL --new-window /path/to/project7" "project7" $IDL_TITLE 8 $X $Y $WIDTH $HEIGHT
+
+open_and_move "browser example.com &" "Browser" -1 $W_H 0 1920 1080
 
 # Add more as needed.
-
 
 echo -e "${GREEN}Workspaces have been restored. Check if all windows are correctly positioned.${NC}"
 
