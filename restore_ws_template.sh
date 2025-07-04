@@ -20,46 +20,30 @@
 
 
 # Function to open and move applications
-# Color codes
-RED='\033[31m'
-GREEN='\033[32m'
-YELLOW='\033[33m'
-BLUE='\033[34m'
-NC='\033[0m'  # No Color
-
-# Set default values if not provided via args
-IDL=${1:-"cursor"} # core or cursor
-MACHINE=${2:-"remote"} # specify remote machine
-
-# Conditional assignment of IDL_TITLE based on the value of IDL
-if [ "$IDL" = "code" ]; then
-    IDL_TITLE="Visual Studio Code"
-elif [ "$IDL" = "cursor" ]; then
-    IDL_TITLE="Cursor"
-else
-    IDL_TITLE="Unknown IDE"
-fi
-# Output the result
-echo "IDL_TITLE is set to: $IDL_TITLE"
-
-# Ensure wmctrl is installed
-if ! command -v wmctrl &> /dev/null; then
-    echo -e "${RED}wmctrl could not be found. Please install it using: sudo apt install wmctrl${NC}"
-    exit
-fi
-
-# Function to open and move applications
 open_and_move() {
     local app_cmd=$1
     shift
     local titles=("$@")
-    local workspace=${titles[-5]}
-    local x=${titles[-4]}
-    local y=${titles[-3]}
-    local width=${titles[-2]}
-    local height=${titles[-1]}
-    # Remove last five elements to keep only titles in the array
-    unset 'titles[-1]' 'titles[-1]' 'titles[-1]' 'titles[-1]' 'titles[-1]'
+    local workspace=${titles[-6]}
+    local x=${titles[-5]}
+    local y=${titles[-4]}
+    local width=${titles[-3]}
+    local height=${titles[-2]}
+    local repo=${titles[-1]}
+    # Example args: "$IDL --new-window --folder-uri vscode-remote://ssh-remote+$MACHINE-ad10/home/ilia.sevostianov/adcu-upload-tool" "adcu-upload-tool" $IDL_TITLE "SSH" 7 $X $Y $WIDTH $HEIGHT "git@gitlab.int.e-kama.com:adas/adcu-upload-tool.git"
+    # Firsty, if we connect to ssh, check if there is a repo there. If not, git clone it on remote machine.
+
+    if [[ "$app_cmd" == *"ssh-remote"* ]]; then
+        echo -e "${YELLOW}Checking if repo exists on remote machine...${NC}"
+        echo -e "${YELLOW}App command: $app_cmd${NC}"
+        echo -e "${YELLOW}Repo: $repo${NC}"
+        # TODO: extract machine from app_cmd
+        REMOTE_MACHINE=$(echo "$app_cmd" | grep -oP 'ssh-remote\+\K[^/]+')
+        echo -e "${YELLOW}Machine: $REMOTE_MACHINE${NC}"
+        ssh -A $REMOTE_MACHINE "if [ -d $repo ]; then echo 'Repo exists'; else echo 'Repo does not exist. Trying to clone...'; git clone $repo; fi"
+    fi
+    # Remove last six elements to keep only titles in the array
+    unset 'titles[-1]' 'titles[-1]' 'titles[-1]' 'titles[-1]' 'titles[-1]' 'titles[-1]'
 
     # Function to check if window exists for given titles
     window_exists() {
@@ -111,7 +95,7 @@ open_and_move() {
     done
 
     # Move and resize the window with retries
-    max_retries=10
+    max_retries=3
     retry=0
     while [ $retry -lt $max_retries ]; do
         echo -e "${YELLOW}Moving window $win_id to workspace $workspace${NC}"
@@ -142,34 +126,34 @@ open_and_move() {
     fi
 }
 
-X=0
-Y=0
-WIDTH=2560
-HEIGHT=1440
+X=132
+Y=64
+WIDTH=2494
+HEIGHT=1408
 W_H=2560
 
-# --------------------- (LOWER Display) -----------------------
-# Example workspace configurations - replace with your own
-open_and_move "true" "Messages" 0 $X $Y $WIDTH $HEIGHT
-open_and_move "true" "Notes" 1 $X $Y $WIDTH $HEIGHT
+# # --------------------- (LOWER Display) -----------------------
+# # Example workspace configurations - replace with your own
+# open_and_move "true" "Messages" 0 $X $Y $WIDTH $HEIGHT
+# open_and_move "true" "Notes" 1 $X $Y $WIDTH $HEIGHT
 
-open_and_move "$IDL --new-window /path/to/project1" "project1" $IDL_TITLE 2 $X $Y $WIDTH $HEIGHT
+# open_and_move "$IDL --new-window /path/to/project1" "project1" $IDL_TITLE 2 $X $Y $WIDTH $HEIGHT
 
-open_and_move "$IDL --new-window --folder-uri vscode-remote://ssh-remote+$MACHINE/home/user/project2" "project2" $IDL_TITLE "SSH" 3 $X $Y $WIDTH $HEIGHT
+# open_and_move "$IDL --new-window --folder-uri vscode-remote://ssh-remote+$MACHINE/home/user/project2" "project2" $IDL_TITLE "SSH" 3 $X $Y $WIDTH $HEIGHT
 
-open_and_move "$IDL --new-window /path/to/project3" "project3" $IDL_TITLE 4 $X $Y $WIDTH $HEIGHT
+# open_and_move "$IDL --new-window /path/to/project3" "project3" $IDL_TITLE 4 $X $Y $WIDTH $HEIGHT
 
-open_and_move "$IDL --new-window --folder-uri vscode-remote://ssh-remote+$MACHINE/home/user/project4" "project4" $IDL_TITLE "SSH" 5 $X $Y $WIDTH $HEIGHT
+# open_and_move "$IDL --new-window --folder-uri vscode-remote://ssh-remote+$MACHINE/home/user/project4" "project4" $IDL_TITLE "SSH" 5 $X $Y $WIDTH $HEIGHT
 
-open_and_move "$IDL --new-window /path/to/project5" "project5" $IDL_TITLE 6 $X $Y $WIDTH $HEIGHT
+# open_and_move "$IDL --new-window /path/to/project5" "project5" $IDL_TITLE 6 $X $Y $WIDTH $HEIGHT
 
-open_and_move "$IDL --new-window /path/to/project6" "project6" $IDL_TITLE 7 $X $Y $WIDTH $HEIGHT
+# open_and_move "$IDL --new-window /path/to/project6" "project6" $IDL_TITLE 7 $X $Y $WIDTH $HEIGHT
 
-open_and_move "$IDL --new-window /path/to/project7" "project7" $IDL_TITLE 8 $X $Y $WIDTH $HEIGHT
+# open_and_move "$IDL --new-window /path/to/project7" "project7" $IDL_TITLE 8 $X $Y $WIDTH $HEIGHT
 
-open_and_move "browser example.com &" "Browser" -1 $W_H 0 1920 1080
+# open_and_move "browser example.com &" "Browser" -1 $W_H 0 1920 1080
 
-# Add more as needed.
+# # Add more as needed.
 
-echo -e "${GREEN}Workspaces have been restored. Check if all windows are correctly positioned.${NC}"
+# echo -e "${GREEN}Workspaces have been restored. Check if all windows are correctly positioned.${NC}"
 
