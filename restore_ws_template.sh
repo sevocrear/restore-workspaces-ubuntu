@@ -126,11 +126,18 @@ open_and_move() {
     fi
 }
 
-X=132
-Y=64
-WIDTH=2494
-HEIGHT=1408
-W_H=2560
+X=132 # X offset wrt to the top tray
+Y=64 # Y offset wrt to the left tab
+
+W_LEFT_DISPLAY=2560
+H_LEFT_DISPLAY=1440
+WIDTH=$((W_LEFT_DISPLAY-X))
+
+HEIGHT=$((H_LEFT_DISPLAY-Y))
+
+echo -e "${YELLOW}WIDTH: $WIDTH${NC}"
+echo -e "${YELLOW}HEIGHT: $HEIGHT${NC}"
+
 
 # # --------------------- (LOWER Display) -----------------------
 # # Example workspace configurations - replace with your own
