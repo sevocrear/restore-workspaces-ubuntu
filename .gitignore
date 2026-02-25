@@ -1,2 +1,3 @@
 restore_ws.sh
 *.json
+restore_ws_*.sh

@@ -2,6 +2,7 @@
 
 sudo chmod a+x *.sh
 
+sudo rm /usr/bin/restore* | true
 sudo cp ./restore_ws_template.sh /usr/bin/restore_ws_template.sh
 
 # Find in file current_dir=$(pwd) and replace with current directory
