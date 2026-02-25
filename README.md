@@ -32,8 +32,8 @@ chmod a+x ./get_ws.sh
 
 Moving on...
 
-# 🔧 Third Step: Adjust the restore_ws.sh Script to Recreate Your Workspaces
-This bash script configures your workspaces just the way you need! It opens the desired apps via CLI and places them in the correct workspaces.
+# 🔧 Third Step: Adjust the restore scripts to Recreate Your Workspaces
+These bash scripts (for example, `restore_ws_work.sh`, `restore_ws_freelance.sh`) configure your workspaces just the way you need! They open the desired apps via CLI and place them in the correct workspaces.
 
 The command template is:
 
@@ -44,18 +44,30 @@ The command template is:
 > ⚠️ Note: Workspace numbers should ascend sequentially, starting with 0.
 
 ## 🔨 Option One: Adjust Manually
-Personalize the script to your needs.
+Open one of the `restore_ws.sh` script and manually write `open_and_move` commands for all windows you want to restore, using `workspace_info.json` as a reference.
 
-## 🧙‍♂️ Option Two: Use an AI Assistant
-Harness AI power for refining your scripts with the prompt:
+After you finish, **run the script and verify** that all windows open and move correctly, and then tweak any commands or titles as needed.
+
+## 🧙‍♂️ Option Two: Use an AI Assistant to Generate `restore_ws.sh`
+Use an LLM agent (ChatGPT, Claude, local LLM, etc.) to generate or update a `restore_ws.sh` script directly from `workspace_info.json` with a prompt like:
 
 ```
-here is the contents of workspace_info.json:
-<your JSON contents>
-Adjust the next bash script 'open_and_move' commands accordingly to recreate my workspaces.
-<THIS BASH SCRIPT code>
+Here is the contents of my workspace_info.json:
+<PASTE workspace_info.json HERE>
+
+Write a bash script named restore_ws.sh that:
+- sources restore_ws_template.sh (to reuse the open_and_move function and common variables)
+- contains open_and_move commands that recreate ALL workspaces and windows from this JSON
+- uses appropriate app launch commands (Cursor/VSCode, browser, Obsidian, Steam, etc.)
+- passes correct workspace number, x, y, width, height from the JSON
 ```
-✨ Adjust manually afterward, as AI may be imperfect—and enjoy your streamlined workspace setup!
+
+After the LLM generates `restore_ws.sh` (or another `restore_ws_<>.sh` you requested):
+- **Save it into this repo**
+- **Run it manually and verify** that all windows open and move correctly
+- **Adjust individual commands/titles by hand if needed** (AI may guess some launch commands or titles incorrectly)
+
+✨ Once it behaves as you like, you’re ready to restore that workspace layout with a single command!
 
 
 # Final Step:
