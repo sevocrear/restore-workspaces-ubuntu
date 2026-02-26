@@ -1,7 +1,7 @@
 #!/bin/bash
 
-current_dir=$(pwd)
-source $current_dir/restore_ws_template.sh
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/restore_ws_template.sh"
 
 MACHINE="Remote-Car"
 IDL_TITLE="cursor"
